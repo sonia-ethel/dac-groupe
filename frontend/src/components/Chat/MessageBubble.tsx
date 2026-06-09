@@ -146,6 +146,7 @@ interface Message {
   sender: "user" | "bot";
   text: string;
   timestamp?: string;
+  type?: "info" | "error" | "success" | "warning";
 }
 
 interface MessageBubbleProps {
@@ -182,6 +183,28 @@ export default function MessageBubble({
 }: MessageBubbleProps) {
   const theme = useTheme();
   const isUser = message.sender === "user";
+
+  const getBubbleColor = () => {
+    if (isUser) return alpha(theme.palette.primary.main, 0.1)
+    
+    switch(message.type) {
+      case "error": return alpha("#F50000", 0.1)
+      case "success": return alpha("#10F500", 0.1)
+      case "warning": return alpha("#F54900", 0.1)
+      default: return alpha(theme.palette.secondary.main, 0.05)
+    }
+  }
+
+  const getBubbleColorHover = () => {
+    if (isUser) return alpha(theme.palette.primary.main, 0.15)
+    
+    switch(message.type) {
+      case "error": return alpha("#F50000", 0.15)
+      case "success": return alpha("#10F500", 0.15)
+      case "warning": return alpha("#F54900", 0.15)
+      default: return alpha(theme.palette.secondary.main, 0.08)
+    }
+  }
 
   return (
     <Box
@@ -247,9 +270,7 @@ export default function MessageBubble({
         <Paper
           elevation={0}
           sx={{
-            bgcolor: isUser
-              ? alpha(theme.palette.primary.main, 0.1)
-              : alpha(theme.palette.secondary.main, 0.05),
+            bgcolor: getBubbleColor(),
             border: `1px solid ${
               isUser
                 ? alpha(theme.palette.primary.main, 0.2)
@@ -262,9 +283,7 @@ export default function MessageBubble({
             position: "relative",
             backdropFilter: "blur(10px)",
             "&:hover": {
-              bgcolor: isUser
-                ? alpha(theme.palette.primary.main, 0.15)
-                : alpha(theme.palette.secondary.main, 0.08),
+              bgcolor: getBubbleColorHover(),
               transform: "translateY(-1px)",
               boxShadow: theme.shadows[4],
             },
